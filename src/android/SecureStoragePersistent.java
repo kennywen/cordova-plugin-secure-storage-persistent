@@ -18,14 +18,13 @@ import org.json.JSONObject;
 import org.json.JSONArray;
 import javax.crypto.Cipher;
 
-public class SecureStorage extends CordovaPlugin {
-    private static final String TAG = "SecureStorage";
+public class SecureStoragePersistent extends CordovaPlugin {
+    private static final String TAG = "SecureStoragePersistent";
 
     private static final boolean SUPPORTS_NATIVE_AES = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
-    private static final boolean SUPPORTED = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
+    private static final boolean SUPPORTED = Build.VERSION.SDK_INT >= Build.VERSION_CODES.MARSHMALLOW;
 
-    private static final String MSG_NOT_SUPPORTED = "API 19 (Android 4.4 KitKat) is required. This device is running API " + Build.VERSION.SDK_INT;
-    private static final String MSG_DEVICE_NOT_SECURE = "Device is not secure";
+    private static final String MSG_NOT_SUPPORTED = "API 23 (Android 6.0 Marshmallow) is required. This device is running API " + Build.VERSION.SDK_INT;
 
     private Hashtable<String, SharedPreferencesHandler> SERVICE_STORAGE = new Hashtable<String, SharedPreferencesHandler>();
     private String INIT_SERVICE;
@@ -34,15 +33,6 @@ public class SecureStorage extends CordovaPlugin {
 
     @Override
     public void onResume(boolean multitasking) {
-        if (secureDeviceContext != null) {
-            if (isDeviceSecure()) {
-                secureDeviceContext.success();
-            } else {
-                secureDeviceContext.error(MSG_DEVICE_NOT_SECURE);
-            }
-            secureDeviceContext = null;
-        }
-
         if (initContext != null && !initContextRunning) {
             cordova.getThreadPool().execute(new Runnable() {
                 public void run() {
@@ -64,17 +54,6 @@ public class SecureStorage extends CordovaPlugin {
                     }
                 }
             });
-        }
-    }
-
-    private boolean isDeviceSecure() {
-        KeyguardManager keyguardManager = (KeyguardManager)(getContext().getSystemService(Context.KEYGUARD_SERVICE));
-        try {
-            Method isSecure = null;
-            isSecure = keyguardManager.getClass().getMethod("isDeviceSecure");
-            return ((Boolean) isSecure.invoke(keyguardManager)).booleanValue();
-        } catch (Exception e) {
-            return keyguardManager.isKeyguardSecure();
         }
     }
 

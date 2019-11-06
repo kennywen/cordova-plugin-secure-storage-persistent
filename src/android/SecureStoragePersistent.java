@@ -22,9 +22,9 @@ public class SecureStoragePersistent extends CordovaPlugin {
     private static final String TAG = "SecureStoragePersistent";
 
     private static final boolean SUPPORTS_NATIVE_AES = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
-    private static final boolean SUPPORTED = Build.VERSION.SDK_INT >= Build.VERSION_CODES.MARSHMALLOW;
+    private static final boolean SUPPORTED = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
 
-    private static final String MSG_NOT_SUPPORTED = "API 23 (Android 6.0 Marshmallow) is required. This device is running API " + Build.VERSION.SDK_INT;
+    private static final String MSG_NOT_SUPPORTED = "API 21 (Android 5.0 Lollipop) is required. This device is running API " + Build.VERSION.SDK_INT;
 
     private Hashtable<String, SharedPreferencesHandler> SERVICE_STORAGE = new Hashtable<String, SharedPreferencesHandler>();
     private String INIT_SERVICE;
@@ -72,10 +72,7 @@ public class SecureStoragePersistent extends CordovaPlugin {
             SharedPreferencesHandler PREFS = new SharedPreferencesHandler(alias + "_SS", getContext());
             SERVICE_STORAGE.put(service, PREFS);
 
-            if (!isDeviceSecure()) {
-                Log.e(TAG, MSG_DEVICE_NOT_SECURE);
-                callbackContext.error(MSG_DEVICE_NOT_SECURE);
-            } else if (!RSA.isEntryAvailable(alias)) {
+            if (!RSA.isEntryAvailable(alias)) {
                 initContext = callbackContext;
                 unlockCredentials();
             } else {
